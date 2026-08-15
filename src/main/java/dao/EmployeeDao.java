@@ -1,13 +1,17 @@
 package dao;
 
+import com.ibm.j9ddr.vm29.structure._jstring;
+import com.ibm.j9ddr.vm29.structure._tagADDRESS64;
 import config.DatabaseConnection;
 import entity.Employee;
 import util.PasswordUtil;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 public class EmployeeDao {
 
@@ -103,6 +107,27 @@ public class EmployeeDao {
         }
     }
 
+    public boolean addEmployee(String first_name, String last_name, String personal_email, String work_email, String password, String phone, String department, String designation , Date joiningDate, double salary) throws SQLException, ClassNotFoundException, NoSuchAlgorithmException {
+        String sql = "Insert into employees(first_name, last_name, personal_email, work_email, password, phone, department, designation, joining_date, salary) values(?,?,?,?,?,?,?,?,?,?)";
+
+        try(Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql))
+        {
+            statement.setString(1, first_name);
+            statement.setString(2, last_name);
+            statement.setString(3, personal_email);
+            statement.setString(4, work_email);
+            statement.setString(5, PasswordUtil.hash(password));
+            statement.setString(6, phone);
+            statement.setString(7, department);
+            statement.setString(8, designation);
+            statement.setDate(9, (java.sql.Date) joiningDate);
+            statement.setDouble(10, salary);
+
+            int rows = statement.executeUpdate();
+            return rows > 0;
+        }
+    }
 
 
 

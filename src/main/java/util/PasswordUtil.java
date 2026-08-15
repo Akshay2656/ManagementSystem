@@ -18,4 +18,13 @@ public class PasswordUtil {
         }
         return builder.toString();
     }
+
+    private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static String generatePassword() {
+        StringBuilder password = new StringBuilder();
+        for(int i = 0; i < 10; i++){
+            password.append(LETTERS.charAt(random.nextInt(LETTERS.length())));
+        }
+        return password.toString();
+    }
 }
