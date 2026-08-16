@@ -1,8 +1,9 @@
 package admin;
 
 import authentication.GmailSender;
-import com.mysql.cj.util.DnsSrv;
 import dao.EmployeeDao;
+import entity.Employee;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,9 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import util.PasswordUtil;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.List;
 
 @WebServlet("/adminDashboard")
 public class AdminDashboardServlet extends HttpServlet {
@@ -23,11 +25,39 @@ public class AdminDashboardServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("adminDashboard.jsp");
-        requestDispatcher.forward(req,resp);
-
-
-
+        String action = req.getParameter("action");
+        if("viewAllEmployee".equals(action)){
+            try{
+                viewAllEmployee(req, resp);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else if("searchEmployee".equals(action)){
+            try{
+                searchEmployee(req, resp);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else if("viewRecentEmployee".equals(action)){
+            try {
+                viewRecentEmployee(req, resp);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else if("viewRecentLeaves".equals(action)){
+            try{
+                viewRecentLeave(req, resp);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("adminDashboard.jsp");
+            requestDispatcher.forward(req,resp);
+        }
     }
 
     @Override
@@ -48,7 +78,7 @@ public class AdminDashboardServlet extends HttpServlet {
 
     }
 
-    public void addEmployee(HttpServletRequest req, HttpServletResponse resp) throws SQLException, NoSuchAlgorithmException, ClassNotFoundException {
+    public void addEmployee(HttpServletRequest req, HttpServletResponse resp) throws SQLException, NoSuchAlgorithmException, ClassNotFoundException, MessagingException, UnsupportedEncodingException {
         resp.setContentType("text/html");
 
         String first_name = req.getParameter("first_name");
@@ -85,19 +115,32 @@ public class AdminDashboardServlet extends HttpServlet {
         }
     }
 
-    public void viewAllEmployee(){
+    public void viewAllEmployee(HttpServletRequest req, HttpServletResponse resp) throws SQLException, ClassNotFoundException, ServletException, IOException {
+        resp.setContentType("text/html");
+        String status = req.getParameter("status");
+        List<Employee> employees;
+        employees = employeeDao.getEmployeeByStatus(status);
+        req.setAttribute("employees", employees);
+        req.getRequestDispatcher("viewEmployees.jsp").forward(req, resp);
 
     }
 
-    public void searchEmployee(){
-
+    public void searchEmployee(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, SQLException, ClassNotFoundException {
+        resp.setContentType("text/html");
+        String work_email = req.getParameter("work_email");
+        Employee employee = employeeDao.getEmployeeByWorkEmail(work_email);
+        req.setAttribute("employee", employee);
+        req.getRequestDispatcher("searchEmployee.jsp").forward(req, resp);
     }
 
-    public void viewRecentEmployee(){
-
+    public void viewRecentEmployee(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html");
+        List<Employee> recentEmployee = employeeDao.getRecentEmployee();
+        req.setAttribute("recentEmployees", recentEmployee);
+        req.getRequestDispatcher("employee.jsp").forward(req, resp);
     }
 
-    public void viewRecentLeave(){
+    public void viewRecentLeave(HttpServletRequest req, HttpServletResponse resp){
 
     }
 

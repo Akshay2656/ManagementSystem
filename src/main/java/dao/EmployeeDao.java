@@ -6,12 +6,15 @@ import config.DatabaseConnection;
 import entity.Employee;
 import util.PasswordUtil;
 
+import javax.swing.text.html.HTMLDocument;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class EmployeeDao {
 
@@ -128,6 +131,88 @@ public class EmployeeDao {
             return rows > 0;
         }
     }
+
+
+    public List<Employee> getEmployeeByStatus(String status) throws SQLException, ClassNotFoundException {
+        String sql = "select * from employees where status = ?";
+
+        List<Employee> employeeList = new ArrayList<>();
+
+        try(Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql))
+        {
+            ResultSet resultSet = statement.executeQuery();
+            if( resultSet.next()){
+                Employee employee = new Employee();
+
+                employee.setEmp_id(resultSet.getInt("emp_id"));
+                employee.setFirst_name(resultSet.getString("first_name"));
+                employee.setLast_name(resultSet.getString("last_name"));
+                employee.setWork_email(resultSet.getString("work_email"));
+                employee.setDepartment(resultSet.getString("department"));
+                employee.setDepartment(resultSet.getString("designation"));
+                employee.setStatus(resultSet.getString("status"));
+
+                employeeList.add(employee);
+            }
+            return employeeList;
+        }
+    }
+
+
+    public Employee getEmployeeByWorkEmail(String workEmail) throws SQLException, ClassNotFoundException {
+        String sql = "select * from employees where work_email = ?";
+
+        try(Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql))
+        {
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                Employee employee = new Employee();
+
+                employee.setEmp_id(resultSet.getInt("emp_id"));
+                employee.setFirst_name(resultSet.getString("first_name"));
+                employee.setLast_name(resultSet.getString("last_name"));
+                employee.setPersonal_email(resultSet.getString("personal_email"));
+                employee.setWork_email(resultSet.getString("work_email"));
+                employee.setPhone(resultSet.getString("phone"));
+                employee.setDepartment(resultSet.getString("department"));
+                employee.setDesignation(resultSet.getString("designation"));
+                employee.setStatus(resultSet.getString("status"));
+
+                return employee;
+            }
+        }
+        return null;
+    }
+
+
+    public List<Employee> getRecentEmployee() throws SQLException, ClassNotFoundException {
+        String sql = "select * from employees order by emp_id limit 4";
+
+        List<Employee> recentEmployee = new ArrayList<>();
+        try(Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql))
+        {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                Employee employee = new Employee();
+
+                employee.setEmp_id(resultSet.getInt("emp_id"));
+                employee.setFirst_name(resultSet.getString("first_name"));
+                employee.setLast_name(resultSet.getString("last_name"));
+                employee.setWork_email(resultSet.getString("work_email"));
+                employee.setDepartment(resultSet.getString("department"));
+                employee.setDesignation(resultSet.getString("designation"));
+                employee.setStatus(resultSet.getString("status"));
+
+                recentEmployee.add(employee);
+            }
+        }
+        return recentEmployee;
+    }
+
+
 
 
 
