@@ -3,6 +3,7 @@ package admin;
 import dao.LeaveDao;
 import employee.EmployeeLeaveServlet;
 import entity.Employee;
+import entity.LeaveRequest;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/AdminLeaveServlet")
 public class AdminLeaveServlet extends HttpServlet {
@@ -55,11 +57,16 @@ public class AdminLeaveServlet extends HttpServlet {
         }
     }
 
-    private void viewLeaves(HttpServletRequest req, HttpServletResponse resp) {
-
+    private void viewLeaves(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<LeaveRequest> leaveLists = leaveDao.getAllLeaves();
+        req.setAttribute("leaveList", leaveLists);
+        req.getRequestDispatcher("adminLeaves.jsp").forward(req, resp);
     }
 
     private void rejectLeave(HttpServletRequest req, HttpServletResponse resp) {
+        int leaveId = Integer.parseInt(req.getParameter("id"));
+        leaveDao.updateLeaveStatus("APPROVED", leaveId);
+
     }
 
     private void approveLeave(HttpServletRequest req, HttpServletResponse resp) {
