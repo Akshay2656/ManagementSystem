@@ -133,7 +133,7 @@ public class AdminDashboardServlet extends HttpServlet {
         req.getRequestDispatcher("searchEmployee.jsp").forward(req, resp);
     }
 
-    public void viewRecentEmployee(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void viewRecentEmployee(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, SQLException, ClassNotFoundException {
         resp.setContentType("text/html");
         List<Employee> recentEmployee = employeeDao.getRecentEmployee();
         req.setAttribute("recentEmployees", recentEmployee);

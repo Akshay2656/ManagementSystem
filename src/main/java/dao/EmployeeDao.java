@@ -1,7 +1,5 @@
 package dao;
 
-import com.ibm.j9ddr.vm29.structure._jstring;
-import com.ibm.j9ddr.vm29.structure._tagADDRESS64;
 import config.DatabaseConnection;
 import entity.Employee;
 import util.PasswordUtil;
